@@ -1,7 +1,7 @@
 <div>
   <div class="matrix">
-    <div class="matrix-col" ng-repeat="col in cols track by $index">
-      <button type="toggle" class="matrix-note" ng-class="{'note-selected': sel}" ng-repeat="note in col.notes">
+    <div class="matrix-col" ng-repeat="col in cols track by $index" ng-class="{'col-playing': col.colPlaying}">
+      <button class="matrix-note" ng-class="{'note-selected': sel}" ng-repeat="note in col.notes">
         {{note.note}}
       </button>
     </div>

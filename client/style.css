@@ -22,6 +22,10 @@
 }
 
 .note-selected {
-  background: buttonhighlight;
+  background: darkorange;
   border: 3px inset;
+}
+
+.col-playing {
+  background: lightsalmon;
 }

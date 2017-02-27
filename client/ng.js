@@ -8,6 +8,7 @@ angular.module('ngMusic', [])
     compile: function() {
       return {
         pre: function(scope, element, attribs) {
+          // Setup
           octave = attribs['octave'] || 4
           cols = attribs['cols'] || 8
           scope.cols = []
@@ -17,15 +18,31 @@ angular.module('ngMusic', [])
 
           scope.playing = false
           scope.playButton = "Play"
-          tone.sequenceInit('4n', scope.cols)
+
+          subdivision = attribs['subdivision'] || '4n'
+
+          loop = new Tone.Sequence(function(time, column){
+            curr = scope.cols.indexOf(column)
+            prev = curr - 1
+            if (prev<0) {prev = scope.cols.length-1}
+            scope.cols[prev].colPlaying = false
+            scope.cols[curr].colPlaying = true
+            scope.$digest()
+            tone.play(column.play)
+          }, scope.cols, subdivision);
+          
+          Tone.Transport.start();
 
           scope.play = function() {
             if (!scope.playing) {
               scope.playButton = "Stop"
-              tone.loop.start()
+              loop.start()
             } else {
               scope.playButton = "Play"
-              tone.loop.stop()
+              loop.stop()
+              scope.cols.forEach(function(column) {
+                column.colPlaying = false
+              })
             }
             scope.playing = !scope.playing
           }
@@ -64,24 +81,9 @@ angular.module('ngMusic', [])
 .service('tone', function() {
   var synth = new Tone.PolySynth(8,Tone.Synth).toMaster()
   return {
-    loop: null,
     play: function(notes, len) {
       if (!len) {len = '8n'}
        synth.triggerAttackRelease(notes , len)
-    },
-    sequencePlay: function(){
-      this.loop.start()
-    },
-    sequenceStop: function(){
-      this.loop.stop()
-    },
-    sequenceInit: function(len, columns) {
-      if (!len) {len = '4n'}
-      self = this
-      this.loop = new Tone.Sequence(function(time, col){
-        self.play(col.play)
-      }, columns, len);
-      Tone.Transport.start();
     }
   }
 })
