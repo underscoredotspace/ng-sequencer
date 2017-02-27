@@ -1,0 +1,9 @@
+{
+  "name": "ng-sequencer",
+  "version": "1.0.0",
+  "author": "Colin Tindle <ampersand@underscore.space> (https://underscore.space)",
+  "license": "CC-BY-NC-4.0",
+  "dependencies": {
+    "tone": "^0.9.0"
+  }
+}
