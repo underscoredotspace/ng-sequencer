@@ -1,6 +1,6 @@
 angular.module('ngMusic', [])
 
-.directive('matrix', function(notes) {
+.directive('matrix', function(notes, tone) {
   return {
     restrict: 'E',
     templateUrl: 'parts/matrix.html',
@@ -13,6 +13,21 @@ angular.module('ngMusic', [])
           scope.cols = []
           for (ndx = 0; ndx < cols; ndx++) {
             scope.cols[ndx] = {notes: notes.notes(octave), play: []}
+          }
+
+          scope.playing = false
+          scope.playButton = "Play"
+          tone.sequenceInit('4n', scope.cols)
+
+          scope.play = function() {
+            if (!scope.playing) {
+              scope.playButton = "Stop"
+              tone.loop.start()
+            } else {
+              scope.playButton = "Play"
+              tone.loop.stop()
+            }
+            scope.playing = !scope.playing
           }
         }
       }
@@ -49,8 +64,24 @@ angular.module('ngMusic', [])
 .service('tone', function() {
   var synth = new Tone.PolySynth(8,Tone.Synth).toMaster()
   return {
-    play: function(notes) {
-      synth.triggerAttackRelease(notes , '8n')
+    loop: null,
+    play: function(notes, len) {
+      if (!len) {len = '8n'}
+       synth.triggerAttackRelease(notes , len)
+    },
+    sequencePlay: function(){
+      this.loop.start()
+    },
+    sequenceStop: function(){
+      this.loop.stop()
+    },
+    sequenceInit: function(len, columns) {
+      if (!len) {len = '4n'}
+      self = this
+      this.loop = new Tone.Sequence(function(time, col){
+        self.play(col.play)
+      }, columns, len);
+      Tone.Transport.start();
     }
   }
 })
