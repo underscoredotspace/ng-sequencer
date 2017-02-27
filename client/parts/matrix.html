@@ -1,7 +1,7 @@
 <div>
   <div class="matrix">
     <div class="matrix-col" ng-repeat="col in cols track by $index" ng-class="{'col-playing': col.colPlaying}">
-      <button class="matrix-note" ng-class="{'note-selected': sel}" ng-repeat="note in col.notes">
+      <button class="matrix-note" ng-class="{'note-selected': note.sel}" ng-repeat="note in col.notes">
         {{note.note}}
       </button>
     </div>
@@ -9,4 +9,6 @@
   <button ng-click="play()">
     {{playButton}}
   </button>
+  <!--<button ng-click="save()">Save</button>-->
+  <button ng-click="load()">Load</button>
 </div>

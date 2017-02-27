@@ -1,3 +1,8 @@
+BODY, HTML {
+  margin: 0;
+  padding: 0;
+}
+
 .matrix {
   display: flex;
   flex-direction: row;
@@ -6,26 +11,25 @@
 .matrix-col {
   display: flex;
   flex-direction: column;
-  border: black 1px solid;
   margin: 2px;
 }
 
 .matrix-note {
-    width: 50px;
-    padding: 20px 0;
-    margin: 2px 5px;
-    border: 3px outset;
+    width: 30px;
+    padding: 3px 0;
+    margin: 3px 3px;
+    border: 2px outset;
     text-align: center;
     vertical-align: middle;
     line-height: 10px;
-    background: buttonface;
+    background: lightsteelblue;
 }
 
 .note-selected {
   background: darkorange;
-  border: 3px inset;
+  border: 2px inset;
 }
 
 .col-playing {
-  background: lightsalmon;
+  background: palegoldenrod;
 }

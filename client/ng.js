@@ -9,11 +9,12 @@ angular.module('ngMusic', [])
       return {
         pre: function(scope, element, attribs) {
           // Setup
-          octave = attribs['octave'] || 4
+          from = attribs['from'] || 'C2'
+          to = attribs['to'] || 'B2'
           cols = attribs['cols'] || 8
           scope.cols = []
           for (ndx = 0; ndx < cols; ndx++) {
-            scope.cols[ndx] = {notes: notes.notes(octave), play: []}
+            scope.cols[ndx] = {notes: notes.notes(from, to), play: []}
           }
 
           scope.playing = false
@@ -28,7 +29,7 @@ angular.module('ngMusic', [])
             scope.cols[prev].colPlaying = false
             scope.cols[curr].colPlaying = true
             scope.$digest()
-            tone.play(column.play)
+            tone.play(column.play())
           }, scope.cols, subdivision);
           
           Tone.Transport.start();
@@ -46,6 +47,40 @@ angular.module('ngMusic', [])
             }
             scope.playing = !scope.playing
           }
+        },
+        post: function(scope) {
+          imagine = [["E4","G4","C3"],["C4","C3","E5"],["E4","G4","C3","E5"],["C4","C3","E5"],["E4","G4","C3","E5"],["C4","C3"],["E4","G4","B4","C3","G5"],["C4","C3","G5"],["F4","A4","F3","F5"],["C4","F3"],["F4","A4","F3"],["C4","F3"],["F4","A4","F3"],["C4","F3"],["A4"],["B4"]]
+
+          scope.load = function() {
+            imagine.forEach(function(col, colNDX) {
+              scope.cols[colNDX].notes.forEach(function(note, noteNDX) {
+                if (col.includes(note.note)) {
+                  scope.cols[colNDX].notes[noteNDX].sel = true
+                }
+              })
+            })
+          }
+        }
+      }
+    }
+  }
+})
+
+.directive('matrixCol', function() {
+  return {
+    restrict: 'C',
+    compile: function() {
+      return {
+        pre: function(scope, element, attribs) {
+          scope.col.play = function() {
+            notes = []
+            scope.col.notes.forEach(function(note) {
+              if (note.sel) {
+                notes.push(note.note)
+              }
+            })
+            return notes
+          }
         }
       }
     }
@@ -58,19 +93,12 @@ angular.module('ngMusic', [])
     compile: function() {
       return {
         pre: function(scope, element, attribs) {
-          scope.sel = false
+          scope.note.sel = false
           element.on('click', function() {
-            scope.sel = !scope.sel
+            scope.note.sel = !scope.note.sel
             scope.$apply()
 
-            if (scope.sel) {
-              scope.$parent.col.play.push(scope.note.note)
-            } else {
-              ndx = scope.$parent.col.play.indexOf(scope.note.note)
-              scope.$parent.col.play.splice(ndx,1)
-            }
-
-            tone.play(scope.$parent.col.play)
+            tone.play(scope.col.play())
           })
         }
       }
@@ -95,13 +123,24 @@ angular.module('ngMusic', [])
       if (!octave) {octave = '5'}
       return this._notes[ndx] + octave
     },
-    notes: function(octave) {
+    notes: function(from, to) {
       notes = []
-      if (!octave) {octave = '5'}
-      this._notes.forEach(function(note){
-        notes.push({note: note + octave})
-      })
+      note = from
+      while (note != this._nextNote(to)) {
+        notes.push({note: note})
+        note = this._nextNote(note)
+      }
       return notes
+    },
+    _nextNote: function(note) {
+      nextPitch = this._notes.indexOf(note[0]) +1
+      nextOctave = note.substring(1)
+
+      if (nextPitch>this._notes.length-1) {
+        nextPitch = 0
+        nextOctave++
+      }
+      return this._notes[nextPitch] + nextOctave
     }
   }
 })
