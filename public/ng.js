@@ -55,8 +55,25 @@ angular.module('ngMusic', [])
             imagine.forEach(function(col, colNDX) {
               scope.cols[colNDX].notes.forEach(function(note, noteNDX) {
                 if (col.includes(note.note)) {
-                  scope.cols[colNDX].notes[noteNDX].sel = true
+                  note.sel = true
                 }
+              })
+            })
+          }
+
+          scope.save = function() {
+            var save = []
+            scope.cols.forEach(function(col, colNDX) {
+              save.push(col.play())
+            })
+
+            console.log(JSON.stringify(save))
+          }
+
+          scope.clear = function() {
+            scope.cols.forEach(function(col, colNDX) {
+              col.notes.forEach(function(note) {
+                note.sel = false
               })
             })
           }
@@ -118,8 +135,7 @@ angular.module('ngMusic', [])
 
 .service('notes', function() {
   return {
-    _notes: ['C', 'D', 'E', 'F#', 'G', 'A', 'B'],
-    __notes: ['C', 'C#', 'D', 'D#', 'E', 'E#', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'B#'],
+    _notes: ['C', 'C#', 'D', 'D#', 'E', 'E#', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'B#'],
     note: function(ndx, octave) {
       if (!octave) {octave = '5'}
       return this._notes[ndx] + octave
@@ -134,8 +150,8 @@ angular.module('ngMusic', [])
       return notes
     },
     _nextNote: function(note) {
-      var nextPitch = this._notes.indexOf(note[0]) +1
-      var nextOctave = note.substring(1)
+      var nextPitch = this._notes.indexOf(note.substring(0,note.length-1)) +1
+      var nextOctave = note.substring(note.length-1)
 
       if (nextPitch>this._notes.length-1) {
         nextPitch = 0
