@@ -32,6 +32,8 @@ angular.module('ngMusic', [])
             tone.play(column.play())
           }, scope.cols, subdivision);
           
+          Tone.Transport.timeSignature = [4, 4];
+		      Tone.Transport.bpm.value = 120;
           Tone.Transport.start();
 
           scope.play = function() {
@@ -50,6 +52,7 @@ angular.module('ngMusic', [])
         },
         post: function(scope) {
           var imagine = [["E4","G4","C3"],["C4","C3","E5"],["E4","G4","C3","E5"],["C4","C3","E5"],["E4","G4","C3","E5"],["C4","C3"],["E4","G4","B4","C3","G5"],["C4","C3","G5"],["F4","A4","F3","F5"],["C4","F3"],["F4","A4","F3"],["C4","F3"],["F4","A4","F3"],["C4","F3"],["A4"],["B4"]]
+          var evap = [["F4","C5","F5"],[],["C5","F5"],[],["A4","C5","F5"],[],["C5","F5"],[],["A#4","C5","F5"],[],["C5","F5"],[],["C5","F5"],[],["C5","F5"],["C4"]]
 
           scope.load = function() {
             imagine.forEach(function(col, colNDX) {
@@ -125,6 +128,11 @@ angular.module('ngMusic', [])
 
 .service('tone', function() {
   var synth = new Tone.PolySynth(8,Tone.Synth).toMaster()
+  synth.set({
+    envelope: {
+      sustain: 1
+    }
+  })
   return {
     play: function(notes, len) {
       if (!len) {len = '8n'}
